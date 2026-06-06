@@ -203,6 +203,8 @@ ORDER BY sales_rank;
 
 
 
+-- **MINI PROJECT :- CUSTOMER SALES INSIGHT
+
 -- 1. Who are the Top 5 Customers?
 WITH customer_sales AS
 (
