@@ -74,6 +74,13 @@ WHERE sales >
     SELECT AVG(sales)
     FROM orders
 );
+/*Output
+order_id      order_date	ship_date	customer_date	product_id		sales	quantity	profit
+CA-2016-152156	11/8/2016	11/11/2016	CG-12520		FUR-BO-10001798	261.96	   2		41.91
+CA-2016-152156	11/8/2016	11/11/2016	CG-12520		FUR-CH-10000454	731.94	  3			219.58
+US-2015-108966	10/11/2015	10/18/2015	SO-20335		FUR-TA-10000577	957.58	  5		   -383.03
+...more rows
+*/
 
 -- 2. Find the highest sales order for each customer (Subquery)
 SELECT *
@@ -84,6 +91,14 @@ WHERE sales =
     FROM orders
     WHERE customer_id = o.customer_id
 );
+/*Output
+order_id      order_date	ship_date	customer_date		product_id		sales	 quantity	profit
+CA-2016-152156	11/8/2016	11/11/2016	CG-12520		FUR-CH-10000454     731.94	 	3		219.58
+US-2015-108966	10/11/2015	10/18/2015	SO-20335		FUR-TA-10000577     957.58	 	5		-383.03
+CA-2014-115812	6/9/2014	6/14/2014	BH-11710		FUR-TA-10001539	    1706.18	 	9		85.31
+...more rows
+*/
+
 -- 3.Calculate total sales for each customer (CTE)
 WITH customer_sales AS
 (
@@ -95,6 +110,14 @@ WITH customer_sales AS
 )
 SELECT *
 FROM customer_sales;
+/*Output
+customer_id    total_sales
+CG-12520		1148.78
+DV-13045		1119.48
+SO-20335		2602.58
+BH-11710		6255.34
+...more rows
+*/
 
 
 -- 4.Find customers whose total sales are above average (CTE + Subquery)
@@ -113,6 +136,14 @@ WHERE total_sales >
     SELECT AVG(total_sales)
     FROM customer_sales
 );
+/*Output
+customer_id    total_sales
+BH-11710		6255.34
+IM-15070		4930.49
+PK-19075		8158.65
+TB-21520		4730.62
+...more rows
+*/
 
 -- 5.Rank all customers based on total sales (Window Function)
 
@@ -130,6 +161,17 @@ SELECT
     RANK() OVER(ORDER BY total_sales DESC) AS sales_rank
 FROM customer_sales;
 
+/*Output
+customer_id  total_sales    sales_rank
+SM-20320	 25043.07	    1
+TC-20980	 19017.85	    2
+RB-19360	 15117.35	    3
+TA-21385	 14595.62	    4
+AB-10105	 14355.61	    5
+... more rows
+*/
+
+
 -- 6.Assign row numbers to each order within a customer (Window Function + PARTITION BY)
 
 SELECT
@@ -142,6 +184,15 @@ SELECT
         ORDER BY sales DESC
     ) AS row_num
 FROM orders;
+
+/*Output
+order_id		customer_id  sales   row_num
+CA-2016-103982	 AA-10315	3930.07		1
+CA-2014-128055	 AA-10315	673.57		2
+CA-2016-103982	 AA-10315	431.98		3
+CA-2017-147039	 AA-10315	362.94		4
+...more rows
+*/
 
 -- 7.Display top 3 customers based on total sales (Window Function)
 
@@ -165,6 +216,12 @@ SELECT *
 FROM ranked_customers
 WHERE sales_rank <= 3;
 
+/*
+customer_id total_sales sales_rank
+SM-20320	25043.07	 1
+TC-20980	19017.85	 2
+RB-19360	15117.35	 3
+*/
 
 
 
